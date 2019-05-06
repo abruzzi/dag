@@ -25,38 +25,21 @@ class Graph {
     }
 
     addEdge = (source, target) => {
-        source = this.addNode(source);
-        target = this.addNode(target);
+        const from = this.addNode(source);
+        const to = this.addNode(target);
 
-        const edge = new Edge(source, target);
+        const edge = new Edge(from, to);
 
         if (this.hasEdge(edge)) {
             return;
         }
 
-        source.addEdge(edge);
-        target.addEdge(edge);
+        from.addEdge(edge);
+        to.addEdge(edge);
 
         this.edges.push(edge);
 
         return edge;
-    }
-
-    dfs = (g, s, cb) => {
-        const visited = {};
-        const head = g.nodes[s.id];
-
-        const iterator = (head) => {
-            visited[head.id] = true;
-            head.adjacents().forEach(node => {
-                if (!visited[node.id]) {
-                    if (callback) {
-                        callback(node);
-                    }
-                    iterator(node);
-                }
-            })
-        }
     }
 
     stacked = (g, head, callback) => {
@@ -88,15 +71,6 @@ class Graph {
       }
 
       iterator(from);
-    }
-
-    findAllRoutes = (graph, head) => {
-      const routes = [];
-      this.stacked(graph, head, (_, stack) => {
-        routes.push(stack.slice());
-      });
-
-      return routes;
     }
 
     routes = (options) => {
