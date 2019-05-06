@@ -1,19 +1,17 @@
-import _ from 'lodash';
+import Node from './Node';
+import Edge from './Edge';
 
-class Node {
-  constructor(id, data) {
-    this.id = id;
-    this.data = data || {};
-    this.edges = []
-  }
+import Graph from './Graph';
 
+const g = new Graph();
 
-}
+g.addEdge('a', 'b');
+g.addEdge('a', 'c');
+g.addEdge('b', 'd');
+g.addEdge('c', 'd');
 
-class Edge {
-}
+const a = new Node('a');
+const b = new Node('b');
 
-class Graph {
-  nodes = {}
-  edges = []
-}
+const routes = g.routes({from: 'a', to: 'd'});
+console.log(routes);
