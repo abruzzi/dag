@@ -4,86 +4,85 @@ import Node from './Node';
 import Edge from './Edge';
 
 class Graph {
-    nodes = {}
-    edges = []
+  constructor() {
+    this.nodes = {}
+    this.edges = []
+  }
 
-    addNode = (id, data) => {
-        const node = new Node(id, data);
-        if (!this.hasNode(node)) {
-            this.nodes[node.id] = node;
-        }
-
-        return this.nodes[node.id];
+  addNode = (id, data) => {
+    const node = new Node(id, data);
+    if (!this.hasNode(node)) {
+      this.nodes[node.id] = node;
     }
 
-    hasNode = (node) => {
-        return _.some(this.nodes, n => n.equals(node));
+    return this.nodes[node.id];
+  }
+
+  hasNode = (node) => {
+    return _.some(this.nodes, n => n.equals(node));
+  }
+
+  hasEdge = (from, to) => {
+    return _.some(this.edges, edge => edge.equals(new Edge(from, to)));
+  }
+
+  addEdge = (source, target) => {
+    const from = this.addNode(source);
+    const to = this.addNode(target);
+
+    const edge = new Edge(from, to);
+
+    if (this.hasEdge(edge)) {
+      return;
     }
 
-    hasEdge = (from, to) => {
-        return _.some(this.edges, edge => edge.equals(new Edge(from, to)));
-    }
+    from.addEdge(edge);
+    to.addEdge(edge);
 
-    addEdge = (source, target) => {
-        const from = this.addNode(source);
-        const to = this.addNode(target);
+    this.edges.push(edge);
 
-        const edge = new Edge(from, to);
+    return edge;
+  }
 
-        if (this.hasEdge(edge)) {
-            return;
-        }
+  stacked = (graph, head, callback) => {
+    const stack = [];
+    const from = graph.nodes[head];
 
-        from.addEdge(edge);
-        to.addEdge(edge);
+    stack.push(from);
 
-        this.edges.push(edge);
+    const iterator = (start) => {
+      start.edges.forEach(edge => {
+        if(edge.target.id !== start.id) {
+          const node = edge.target;
 
-        return edge;
-    }
-
-    stacked = (g, head, callback) => {
-      const stack = [];
-      const from = g.nodes[head];
-
-      stack.push(from);
-
-      const iterator = (s) => {
-        for(let i = 0; i < s.edges.length; ++i) {
-          if(s.edges[i].target.id !== s.id) {
-            const edge = s.edges[i];
-            const node = edge.target;
-
-            if(_.find(stack, {id: node.id})) {
-              continue;
-            }
-
+          if (!_.find(stack, {id: node.id})) {
             stack.push(node);
 
-            if(callback) {
+            if (callback) {
               callback(node, stack);
             }
 
             iterator(node);
             stack.pop();
           }
-        } 
-      }
-
-      iterator(from);
-    }
-
-    routes = (options) => {
-      const routes = [];
-
-      this.stacked(this, options.from, (node, stack) => {
-        if(node.id === options.to) {
-          routes.push(stack.slice())
         }
       })
-
-      return routes;
     }
+
+    iterator(from);
+  }
+
+  routes = (options) => {
+    const routes = [];
+
+    this.stacked(this, options.from, (node, stack) => {
+      if (node.id === options.to) {
+        routes.push(stack.slice())
+      }
+    })
+
+    return routes;
+  }
 }
 
 export default Graph;
