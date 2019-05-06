@@ -5,12 +5,13 @@ import Edge from './Edge';
 
 class Graph {
   constructor() {
-    this.nodes = {}
-    this.edges = []
+    this.nodes = {};
+    this.edges = [];
   }
 
   addNode = (id, data) => {
     const node = new Node(id, data);
+
     if (!this.hasNode(node)) {
       this.nodes[node.id] = node;
     }
@@ -50,9 +51,9 @@ class Graph {
 
     stack.push(from);
 
-    const iterator = (start) => {
-      start.edges.forEach(edge => {
-        if(edge.target.id !== start.id) {
+    const iterator = (node) => {
+      node.edges.forEach(edge => {
+        if(edge.target.id !== node.id) {
           const node = edge.target;
 
           if (!_.find(stack, {id: node.id})) {
@@ -67,10 +68,10 @@ class Graph {
           }
         }
       })
-    }
+    };
 
     iterator(from);
-  }
+  };
 
   routes = (options) => {
     const routes = [];
@@ -79,9 +80,16 @@ class Graph {
       if (node.id === options.to) {
         routes.push(stack.slice())
       }
-    })
+    });
 
     return routes;
+  }
+
+  mermaidify = () => {
+    console.log('graph LR');
+    this.edges.forEach(edge => {
+      console.log(`${edge.source.id} --> ${edge.target.id}`);
+    })
   }
 }
 
